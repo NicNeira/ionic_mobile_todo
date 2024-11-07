@@ -1,15 +1,15 @@
 <ion-menu side="end" content-id="content">
   <ion-header>
     <ion-toolbar>
-      <ion-title>Menu</ion-title>
+      <ion-title>Menú</ion-title>
     </ion-toolbar>
   </ion-header>
   <ion-content>
     <ion-list>
-      <ion-item [disabled]="shoppingList.isEmpty">
+      <!-- Deshabilitar "Eliminar todos los items" cuando la lista esté vacía -->
+      <ion-item [disabled]="shoppingList.isEmpty" (click)="removeAllItems()">
         <ion-icon slot="start" name="trash-outline"></ion-icon>
-
-        <ion-label>Eliminar todos los items </ion-label>
+        <ion-label>Eliminar todos los items</ion-label>
       </ion-item>
     </ion-list>
   </ion-content>
@@ -17,18 +17,21 @@
 
 <ion-header [translucent]="true" id="content">
   <ion-toolbar>
-    <ion-title> Mi lista de la compra </ion-title>
+    <ion-title>Mi lista de tareas</ion-title>
     <ion-buttons slot="end">
       <ion-menu-button auto-hide="false"></ion-menu-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<!-- Un solo ion-content para contener todas las secciones -->
 <ion-content [fullscreen]="true">
+  <!-- Mensaje cuando la lista de tareas esté vacía -->
   <ion-item class="ion-text-center" lines="none" *ngIf="shoppingList.isEmpty">
-    <ion-label> No hay items en tu lista </ion-label>
+    <ion-label>No hay tareas en tu lista</ion-label>
   </ion-item>
 
+  <!-- Lista de tareas cuando no esté vacía -->
   <ion-list *ngIf="!shoppingList.isEmpty">
     <ion-reorder-group
       [disabled]="false"
@@ -36,30 +39,49 @@
     >
       <ion-item-sliding *ngFor="let item of shoppingList.items">
         <ion-item>
-          <ion-label>{{ item }}</ion-label>
+          <ion-label>{{ item.name }} - {{ item.description }}</ion-label>
           <ion-reorder></ion-reorder>
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="removeItem(item)">
+          <!-- Botón de editar tarea -->
+          <ion-item-option color="secondary" (click)="editItem(item)">
+            <ion-icon name="create-outline"></ion-icon>
+          </ion-item-option>
+
+          <!-- Botón de eliminar tarea -->
+          <ion-item-option color="danger" (click)="removeItem(item.name)">
             <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
           </ion-item-option>
         </ion-item-options>
       </ion-item-sliding>
     </ion-reorder-group>
   </ion-list>
-</ion-content>
 
-<ion-content [fullscreen]="true">
+  <!-- Campos de entrada para agregar una nueva tarea -->
   <ion-item>
+    <ion-label position="floating">Tarea</ion-label>
     <ion-input
-      label="Item"
-      type="text"
       [(ngModel)]="item"
+      type="text"
       name="item"
+      placeholder="Ingrese la tarea"
     ></ion-input>
-    <ion-button [disabled]="!item" (click)="addItem()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-button>
   </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Descripción</ion-label>
+    <ion-input
+      [(ngModel)]="desc"
+      type="text"
+      name="desc"
+      placeholder="Ingrese la descripción"
+    ></ion-input>
+  </ion-item>
+
+  <!-- Botón para agregar la tarea -->
+  <ion-button [disabled]="!item || !desc" (click)="addItem()">
+    <ion-icon name="add-outline"></ion-icon>
+    Agregar
+  </ion-button>
 </ion-content>

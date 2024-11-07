@@ -1,4 +1,14 @@
 import { Component } from '@angular/core';
+import { ToDoService } from '../to-do.service';
+import { AlertController } from '@ionic/angular';
+import { CommonModule } from '@angular/common';
+import { addIcons } from 'ionicons';
+import {
+  trashOutline,
+  createOutline,
+  trashBinOutline,
+  addOutline,
+} from 'ionicons/icons';
 import {
   IonHeader,
   IonToolbar,
@@ -19,8 +29,6 @@ import {
   IonInput,
   IonButton,
 } from '@ionic/angular/standalone';
-import { ToDoService } from '../to-do.service';
-import { AlertController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -29,6 +37,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['home.page.scss'],
   standalone: true,
   imports: [
+    CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -46,32 +55,51 @@ import { FormsModule } from '@angular/forms';
     IonIcon,
     IonMenu,
     IonInput,
-    FormsModule,
     IonButton,
+    FormsModule,
   ],
 })
 export class HomePage {
   public item: string = '';
-  public desc: string = ''; // Add description
+  public desc: string = '';
+  private editMode: boolean = false;
+  private originalName: string = '';
 
   constructor(
     public shoppingList: ToDoService,
     private alertController: AlertController
-  ) {}
+  ) {
+    addIcons({
+      trashOutline,
+      createOutline,
+      trashBinOutline,
+      addOutline,
+    });
+  }
 
-  // Function to add item with description
+  // Función para agregar una tarea
   addItem() {
-    if (!this.shoppingList.existsItem(this.item)) {
-      this.shoppingList.addItem(this.item, this.desc); // Add both name and description
-      this.item = ''; // Clear input after adding
-      this.desc = ''; // Clear description
+    if (this.item && this.desc) {
+      if (this.editMode) {
+        // Si estamos en modo edición, actualizar el item
+        this.shoppingList.editItem(this.originalName, this.item, this.desc);
+        this.editMode = false;
+        this.originalName = '';
+      } else if (this.shoppingList.existsItem(this.item)) {
+        // Si no estamos en modo edición y el item existe, mostrar error
+        this.alertError();
+        return;
+      } else {
+        // Si no existe, agregar nuevo item
+        this.shoppingList.addItem(this.item, this.desc);
+      }
       this.alertSuccess();
-    } else {
-      this.alertError();
+      this.item = '';
+      this.desc = '';
     }
   }
 
-  // Remove item function with confirmation
+  // Eliminar una tarea con confirmación
   async removeItem(item: string) {
     const alert = await this.alertController.create({
       header: 'Confirmación',
@@ -94,30 +122,42 @@ export class HomePage {
     await alert.present();
   }
 
-  // Rearrange items function
+  removeAllItems() {
+    this.shoppingList.removeAllItems();
+    this.alertSuccess();
+  }
+
+  // Función para manejar el reordenamiento de tareas
   onRenderItems($event) {
     const item = this.shoppingList.items.splice($event.detail.from, 1)[0];
     this.shoppingList.items.splice($event.detail.to, 0, item);
     $event.detail.complete();
   }
 
-  // Alert on success (item added)
   async alertSuccess() {
     const alert = await this.alertController.create({
       header: 'Éxito',
-      message: 'Item agregado',
+      message: 'Operación exitosa',
       buttons: ['OK'],
     });
     await alert.present();
   }
 
-  // Alert on error (item already exists)
+  // Mostrar alerta de error (ej. tarea ya existe)
   async alertError() {
     const alert = await this.alertController.create({
       header: 'Error',
-      message: 'El item ya existe',
+      message: 'La tarea ya existe',
       buttons: ['OK'],
     });
     await alert.present();
+  }
+
+  // Función para editar una tarea
+  editItem(item: { name: string; description: string }) {
+    this.editMode = true;
+    this.originalName = item.name;
+    this.item = item.name;
+    this.desc = item.description;
   }
 }

@@ -19,7 +19,7 @@ export class ToDoService {
 
   addItem(name: string, description: string) {
     this.items.push({ name, description });
-    this.isEmpty = false;
+    this.isEmpty = false; // Actualizar la bandera isEmpty cuando se agrega un item
   }
 
   removeItem(name: string) {
@@ -28,15 +28,13 @@ export class ToDoService {
     );
     if (index !== -1) {
       this.items.splice(index, 1);
-      if (this.items.length === 0) {
-        this.isEmpty = true;
-      }
+      this.isEmpty = this.items.length === 0; // Actualizar isEmpty cuando se elimina un item
     }
   }
 
   removeAllItems() {
     this.items = [];
-    this.isEmpty = true;
+    this.isEmpty = true; // Actualizar isEmpty cuando se eliminan todos los items
   }
 
   existsItem(name: string): boolean {
@@ -45,12 +43,13 @@ export class ToDoService {
     );
   }
 
-  editItem(name: string, newDescription: string) {
-    const item = this.items.find(
-      (it) => it.name.toUpperCase().trim() === name.toUpperCase().trim()
+  editItem(originalName: string, newName: string, newDescription: string) {
+    const index = this.items.findIndex(
+      (it) => it.name.toUpperCase().trim() === originalName.toUpperCase().trim()
     );
-    if (item) {
-      item.description = newDescription;
+    if (index !== -1) {
+      this.items[index].name = newName;
+      this.items[index].description = newDescription;
     }
   }
 }
