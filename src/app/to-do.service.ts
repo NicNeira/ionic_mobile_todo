@@ -28,7 +28,7 @@ export class ToDoService {
     );
     if (index !== -1) {
       this.items.splice(index, 1);
-      this.isEmpty = this.items.length === 0; // Actualizar isEmpty cuando se elimina un item
+      this.isEmpty = this.items.length === 0;
     }
   }
 

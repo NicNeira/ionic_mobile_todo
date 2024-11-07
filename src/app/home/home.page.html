@@ -6,7 +6,6 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <!-- Deshabilitar "Eliminar todos los items" cuando la lista esté vacía -->
       <ion-item [disabled]="shoppingList.isEmpty" (click)="removeAllItems()">
         <ion-icon slot="start" name="trash-outline"></ion-icon>
         <ion-label>Eliminar todos los items</ion-label>
@@ -44,12 +43,12 @@
         </ion-item>
 
         <ion-item-options side="end">
-          <!-- Botón de editar tarea -->
+          <!-- Editar -->
           <ion-item-option color="secondary" (click)="editItem(item)">
             <ion-icon name="create-outline"></ion-icon>
           </ion-item-option>
 
-          <!-- Botón de eliminar tarea -->
+          <!-- Eliminar -->
           <ion-item-option color="danger" (click)="removeItem(item.name)">
             <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
           </ion-item-option>
@@ -58,7 +57,7 @@
     </ion-reorder-group>
   </ion-list>
 
-  <!-- Campos de entrada para agregar una nueva tarea -->
+  <!-- Input -->
   <ion-item>
     <ion-label position="floating">Tarea</ion-label>
     <ion-input
@@ -79,7 +78,7 @@
     ></ion-input>
   </ion-item>
 
-  <!-- Botón para agregar la tarea -->
+  <!-- Agregar -->
   <ion-button [disabled]="!item || !desc" (click)="addItem()">
     <ion-icon name="add-outline"></ion-icon>
     Agregar

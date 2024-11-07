@@ -122,6 +122,7 @@ export class HomePage {
     await alert.present();
   }
 
+  //
   removeAllItems() {
     this.shoppingList.removeAllItems();
     this.alertSuccess();
@@ -154,10 +155,44 @@ export class HomePage {
   }
 
   // Función para editar una tarea
-  editItem(item: { name: string; description: string }) {
-    this.editMode = true;
-    this.originalName = item.name;
-    this.item = item.name;
-    this.desc = item.description;
+  async editItem(item: { name: string; description: string }) {
+    const alert = await this.alertController.create({
+      header: 'Editar Tarea',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre de la tarea',
+          value: item.name,
+        },
+        {
+          name: 'description',
+          type: 'text',
+          placeholder: 'Descripción',
+          value: item.description,
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+        },
+        {
+          text: 'Guardar',
+          handler: (data) => {
+            if (data.name && data.description) {
+              this.shoppingList.editItem(
+                item.name,
+                data.name,
+                data.description
+              );
+              this.alertSuccess();
+            }
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }
