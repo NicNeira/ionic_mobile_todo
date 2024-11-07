@@ -6,7 +6,7 @@ export const routes: Routes = [
     loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
   },
   {
-    path: '**', // Wildcard route for a 404 page, if needed
+    path: '**',
     redirectTo: 'home',
     pathMatch: 'full',
   },
