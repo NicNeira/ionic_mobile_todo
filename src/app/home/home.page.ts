@@ -122,10 +122,28 @@ export class HomePage {
     await alert.present();
   }
 
-  //
-  removeAllItems() {
-    this.shoppingList.removeAllItems();
-    this.alertSuccess();
+  // Eliminar todas las tareas con confirmación
+  async removeAllItems() {
+    const alert = await this.alertController.create({
+      header: 'Confirmación',
+      message: '¿Desea eliminar todas las tareas?',
+      buttons: [
+        {
+          text: 'Sí',
+          handler: () => {
+            this.shoppingList.removeAllItems();
+            this.alertSuccess();
+          },
+        },
+        {
+          text: 'No',
+          handler: () => {
+            alert.dismiss();
+          },
+        },
+      ],
+    });
+    await alert.present();
   }
 
   // Función para manejar el reordenamiento de tareas
