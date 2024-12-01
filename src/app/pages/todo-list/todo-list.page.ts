@@ -2,14 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
-
-
 import {
   IonButton,
   IonButtons,
   IonContent,
   IonHeader,
   IonIcon,
+  IonImg,
   IonInput,
   IonItem,
   IonItemOption,
@@ -21,13 +20,16 @@ import {
   IonMenuButton,
   IonReorder,
   IonReorderGroup,
+  IonThumbnail,
   IonTitle,
-  IonToolbar,
+  IonToolbar
 } from '@ionic/angular/standalone';
 import { TaskService } from 'src/app/services/task.service';
 
 import { HttpClientModule } from '@angular/common/http';
 import { forkJoin } from 'rxjs';
+import { CameraService } from 'src/app/services/camera.service';
+import { GeolocationService } from 'src/app/services/geolocation.service';
 import { ToDoItem } from '../../interfaces/todo-item.interface';
 
 @Component({
@@ -49,22 +51,29 @@ import { ToDoItem } from '../../interfaces/todo-item.interface';
     IonReorderGroup,
     IonItemSliding,
     IonReorder,
-    IonItemOptions,
     IonItemOption,
     IonIcon,
     IonMenu,
     IonInput,
     IonButton,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    IonThumbnail,
+    IonImg,
+    IonItemOptions
   ],
 })
 export class TodoListPage implements OnInit {
   tasks: ToDoItem[] = [];
   newTaskName = '';
   newTaskDescription = '';
+  newTaskImage: string = '';
 
-  constructor(private taskService: TaskService) {}
+  constructor(
+    private taskService: TaskService,
+    private cameraService: CameraService,
+    private geolocationService: GeolocationService // Inyección del servicio
+  ) { }
 
   ngOnInit() {
     this.loadTasks();
@@ -78,20 +87,35 @@ export class TodoListPage implements OnInit {
   }
 
   // Añadir una nueva tarea
-  addTask() {
+  async addTask() {
     if (this.newTaskName.trim() && this.newTaskDescription.trim()) {
+      let position = { latitude: null, longitude: null };
+      try {
+        console.log('Obteniendo ubicación...');
+        position = await this.geolocationService.getCurrentPosition();
+        console.log('Ubicación obtenida:', position);
+      } catch (error) {
+        console.error('No se pudo obtener la ubicación', error);
+      }
+
       const newTask: Omit<ToDoItem, 'id'> = {
         title: this.newTaskName,
         description: this.newTaskDescription,
         completed: false,
+        imageUrl: this.newTaskImage,
+        latitude: position.latitude,
+        longitude: position.longitude,
       };
+
       this.taskService.addTask(newTask).subscribe((task) => {
         this.tasks.push(task);
         this.newTaskName = '';
         this.newTaskDescription = '';
+        this.newTaskImage = '';
       });
     }
   }
+
 
   // Editar una tarea existente
   editTask(task: ToDoItem) {
@@ -120,5 +144,9 @@ export class TodoListPage implements OnInit {
     const itemMove = this.tasks.splice(event.detail.from, 1)[0];
     this.tasks.splice(event.detail.to, 0, itemMove);
     event.detail.complete();
+  }
+
+  async captureImage() {
+    this.newTaskImage = await this.cameraService.takePicture();
   }
 }

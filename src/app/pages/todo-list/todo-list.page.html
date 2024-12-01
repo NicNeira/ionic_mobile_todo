@@ -30,45 +30,46 @@
     <ion-label>No hay tareas en tu lista</ion-label>
   </ion-item>
 
-  <!-- Lista de tareas cuando no esté vacía -->
+  <!-- Lista de tareas -->
   <ion-list *ngIf="tasks.length > 0">
-    <ion-reorder-group
-      [disabled]="false"
-      (ionItemReorder)="reorderTasks($event)"
-    >
-    <ion-item-sliding *ngFor="let task of tasks">
-      <ion-item>
-        <ion-label>{{ task.title }} - {{ task.description }}</ion-label>
-        <!-- Delete task whit ID -->
-        <ion-item-option color="danger" (click)="removeTask(task.id)">
-          <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
-        </ion-item-option>
-        <ion-reorder></ion-reorder>
-
+    <ion-reorder-group [disabled]="false" (ionItemReorder)="reorderTasks($event)">
+      <ion-item-sliding *ngFor="let task of tasks">
+        <ion-item>
+          <ion-thumbnail slot="start" *ngIf="task.imageUrl">
+            <ion-img [src]="task.imageUrl"></ion-img>
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ task.title }}</h2>
+            <p>{{ task.description }}</p>
+            <p *ngIf="task.latitude && task.longitude">
+              📍 Ubicación: {{ task.latitude }}, {{ task.longitude }}
+            </p>
+            <!-- Enlace para ver en el mapa -->
+            <p *ngIf="task.latitude && task.longitude">
+              <a [href]="'https://www.google.com/maps/search/?api=1&query=' + task.latitude + ',' + task.longitude" target="_blank">
+                Ver en mapa
+              </a>
+            </p>
+          </ion-label>
+          <ion-reorder></ion-reorder>
         </ion-item>
-
-        <!-- <ion-item-options side="end">
-          <ion-item-option color="secondary" (click)="editTask(task)">
-            <ion-icon name="create-outline"></ion-icon>
-          </ion-item-option>
-
+        <ion-item-options side="end">
           <ion-item-option color="danger" (click)="removeTask(task.id)">
             <ion-icon slot="icon-only" name="trash-bin-outline"></ion-icon>
           </ion-item-option>
-        </ion-item-options> -->
-
+        </ion-item-options>
       </ion-item-sliding>
     </ion-reorder-group>
   </ion-list>
 
   <br>
 
-  <!-- Input -->
+  <!-- Formulario para agregar nueva tarea -->
   <ion-item>
     <ion-label position="floating">Tarea</ion-label>
     <ion-input
-    [(ngModel)]="newTaskName"
-    type="text"
+      [(ngModel)]="newTaskName"
+      type="text"
       name="item"
       placeholder="Ingrese la tarea"
     ></ion-input>
@@ -77,24 +78,39 @@
   <ion-item>
     <ion-label position="floating">Descripción</ion-label>
     <ion-input
-    [(ngModel)]="newTaskDescription"
-    type="text"
+      [(ngModel)]="newTaskDescription"
+      type="text"
       name="desc"
       placeholder="Ingrese la descripción"
     ></ion-input>
   </ion-item>
 
+  <!-- Botón para agregar una imagen -->
+  <ion-item>
+    <ion-button (click)="captureImage()">
+      <ion-icon name="camera-outline"></ion-icon>
+      Agregar Imagen
+    </ion-button>
+  </ion-item>
+
   <br>
 
-  <!-- Agregar -->
-  <ion-button [disabled]="!newTaskName || !newTaskDescription" (click)="addTask()">
+  <!-- Vista previa de la imagen -->
+  <ion-img *ngIf="newTaskImage" [src]="newTaskImage"></ion-img>
+
+  <br>
+
+  <!-- Botones para agregar y eliminar tareas -->
+  <ion-button
+    [disabled]="!newTaskName || !newTaskDescription"
+    (click)="addTask()"
+  >
     <ion-icon name="add-outline"></ion-icon>
     Agregar
   </ion-button>
-  <!-- Delete all task -->
+
   <ion-button [disabled]="tasks.length === 0" (click)="removeAllTasks()">
     <ion-icon name="trash-outline"></ion-icon>
     Eliminar todas las tareas
   </ion-button>
-
 </ion-content>

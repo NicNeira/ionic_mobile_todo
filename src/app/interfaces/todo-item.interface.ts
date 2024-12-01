@@ -5,7 +5,8 @@ export interface ToDoItem {
   description: string;
   completed: boolean;
   imageUrl?: string;
-  locationLatitude?: string 
-  locationlongitude?: string 
+  latitude?: string 
+  longitude?: string 
   };
+
 
