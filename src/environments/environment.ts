@@ -3,7 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  MockAPICode: '674bf18771933a4e88565ec3'
 };
 
 /*
